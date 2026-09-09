@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "djangorest"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.14"
+black = "^26.5.1"
+mypy = "^2.1.0"
+isort = "^8.0.1"
+django = "^6.0"
+psycopg2-binary = "^2.9.12"
+ipython = "^9.15.0"
+pillow = "^12.3.0"
+djangorestframework = "^3.18.1"
+python-dotenv = "^1.2.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
