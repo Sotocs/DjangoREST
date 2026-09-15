@@ -15,11 +15,16 @@ class Lesson(models.Model):
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name="lessons"
+        related_name="lessons",
     )
     title = models.CharField(max_length=100, verbose_name="Название")
     description = models.TextField()
-    preview = models.ImageField(upload_to="previews/", null=True, blank=True, verbose_name="Превью")
+    preview = models.ImageField(
+        upload_to="previews/",
+        null=True,
+        blank=True,
+        verbose_name="Превью",
+    )
     video_url = models.URLField(verbose_name="Ссылка на видео")
     link = models.CharField()
 
