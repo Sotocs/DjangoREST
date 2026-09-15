@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    "django_filters",
     "rest_framework",
+
     "users",
     "lms"
 ]
@@ -79,9 +81,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "djangoREST",
+        "NAME": "lms_db",
         "USER": "postgres",
-        "PASSWORD": "1234",
+        "PASSWORD": "derevo1576",
     }
 }
 
