@@ -2,6 +2,12 @@ from django.db import models
 
 
 class Course(models.Model):
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="courses",
+        verbose_name="Владелец",
+    )
     title = models.CharField(max_length=100, verbose_name="Название")
     preview = models.ImageField(
         upload_to="previews/", null=True, blank=True, verbose_name="Превью"
@@ -12,6 +18,12 @@ class Course(models.Model):
         return self.title
 
 class Lesson(models.Model):
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="lessons",
+        verbose_name="Владелец",
+    )
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
