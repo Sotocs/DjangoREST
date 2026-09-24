@@ -1,4 +1,3 @@
-
 from lms.permissions import IsModerator, IsOwner
 from lms.paginators import LMSPagination
 
@@ -14,6 +13,7 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 
 class CourseViewSet(viewsets.ModelViewSet):
     """CRUD для курса через ViewSet."""
@@ -45,8 +45,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
 class LessonListCreateView(ListCreateAPIView):
     """Список уроков + создание."""
+
     pagination_class = LMSPagination
     serializer_class = LessonSerializer
 
@@ -72,9 +74,7 @@ class LessonListCreateView(ListCreateAPIView):
         if course.owner_id != self.request.user.id:
             from rest_framework.exceptions import PermissionDenied
 
-            raise PermissionDenied(
-                "Можно создавать уроки только в своих курсах."
-            )
+            raise PermissionDenied("Можно создавать уроки только в своих курсах.")
 
         serializer.save(owner=self.request.user)
 

@@ -3,10 +3,9 @@ from rest_framework import serializers
 from lms.models import Course, Lesson, Subscription
 from lms.validators import validate_youtube_url
 
+
 class LessonSerializer(serializers.ModelSerializer):
-    video_url = serializers.URLField(
-        validators=[validate_youtube_url]
-    )
+    video_url = serializers.URLField(validators=[validate_youtube_url])
 
     class Meta:
         model = Lesson
@@ -33,9 +32,8 @@ class CourseSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
 
-        return obj.subscriptions.filter(
-            user=request.user
-        ).exists()
+        return obj.subscriptions.filter(user=request.user).exists()
+
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:

@@ -17,6 +17,7 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+
 class Lesson(models.Model):
     owner = models.ForeignKey(
         "users.User",
@@ -46,6 +47,7 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Subscription(models.Model):
     user = models.ForeignKey(

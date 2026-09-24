@@ -25,7 +25,9 @@ class PaymentViewSet(viewsets.ModelViewSet):
     ordering_fields = ["payment_date"]
     ordering = ["-payment_date"]
 
+
 class UserViewSet(viewsets.ModelViewSet):
     """CRUD для пользователей — в т.ч. редактирование профиля."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer

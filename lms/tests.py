@@ -68,9 +68,7 @@ class LMSTestCase(APITestCase):
     def test_lesson_retrieve(self):
         self.client.force_authenticate(user=self.user)
 
-        response = self.client.get(
-            f"/api/lessons/{self.lesson.id}/"
-        )
+        response = self.client.get(f"/api/lessons/{self.lesson.id}/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["id"], self.lesson.id)
@@ -97,21 +95,15 @@ class LMSTestCase(APITestCase):
     def test_lesson_delete(self):
         self.client.force_authenticate(user=self.user)
 
-        response = self.client.delete(
-            f"/api/lessons/{self.lesson.id}/"
-        )
+        response = self.client.delete(f"/api/lessons/{self.lesson.id}/")
 
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(
-            Lesson.objects.filter(id=self.lesson.id).exists()
-        )
+        self.assertFalse(Lesson.objects.filter(id=self.lesson.id).exists())
 
     def test_other_user_cannot_retrieve_lesson(self):
         self.client.force_authenticate(user=self.other_user)
 
-        response = self.client.get(
-            f"/api/lessons/{self.lesson.id}/"
-        )
+        response = self.client.get(f"/api/lessons/{self.lesson.id}/")
 
         self.assertEqual(response.status_code, 404)
 
@@ -136,21 +128,15 @@ class LMSTestCase(APITestCase):
     def test_other_user_cannot_delete_lesson(self):
         self.client.force_authenticate(user=self.other_user)
 
-        response = self.client.delete(
-            f"/api/lessons/{self.lesson.id}/"
-        )
+        response = self.client.delete(f"/api/lessons/{self.lesson.id}/")
 
         self.assertEqual(response.status_code, 404)
-        self.assertTrue(
-            Lesson.objects.filter(id=self.lesson.id).exists()
-        )
+        self.assertTrue(Lesson.objects.filter(id=self.lesson.id).exists())
 
     def test_moderator_can_retrieve_lesson(self):
         self.client.force_authenticate(user=self.moderator)
 
-        response = self.client.get(
-            f"/api/lessons/{self.lesson.id}/"
-        )
+        response = self.client.get(f"/api/lessons/{self.lesson.id}/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["id"], self.lesson.id)
@@ -195,21 +181,15 @@ class LMSTestCase(APITestCase):
     def test_moderator_cannot_delete_lesson(self):
         self.client.force_authenticate(user=self.moderator)
 
-        response = self.client.delete(
-            f"/api/lessons/{self.lesson.id}/"
-        )
+        response = self.client.delete(f"/api/lessons/{self.lesson.id}/")
 
         self.assertEqual(response.status_code, 403)
-        self.assertTrue(
-            Lesson.objects.filter(id=self.lesson.id).exists()
-        )
+        self.assertTrue(Lesson.objects.filter(id=self.lesson.id).exists())
 
     def test_subscribe_to_course(self):
         self.client.force_authenticate(user=self.user)
 
-        response = self.client.post(
-            f"/api/courses/{self.course.id}/subscribe/"
-        )
+        response = self.client.post(f"/api/courses/{self.course.id}/subscribe/")
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(
@@ -231,9 +211,7 @@ class LMSTestCase(APITestCase):
             course=self.course,
         )
 
-        response = self.client.post(
-            f"/api/courses/{self.course.id}/subscribe/"
-        )
+        response = self.client.post(f"/api/courses/{self.course.id}/subscribe/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -256,9 +234,7 @@ class LMSTestCase(APITestCase):
             course=self.course,
         )
 
-        response = self.client.delete(
-            f"/api/courses/{self.course.id}/subscribe/"
-        )
+        response = self.client.delete(f"/api/courses/{self.course.id}/subscribe/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -275,9 +251,7 @@ class LMSTestCase(APITestCase):
     def test_repeat_unsubscribe(self):
         self.client.force_authenticate(user=self.user)
 
-        response = self.client.delete(
-            f"/api/courses/{self.course.id}/subscribe/"
-        )
+        response = self.client.delete(f"/api/courses/{self.course.id}/subscribe/")
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(
@@ -293,9 +267,7 @@ class LMSTestCase(APITestCase):
             course=self.course,
         )
 
-        response = self.client.get(
-            f"/api/courses/{self.course.id}/"
-        )
+        response = self.client.get(f"/api/courses/{self.course.id}/")
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data["is_subscribed"])
@@ -303,9 +275,7 @@ class LMSTestCase(APITestCase):
     def test_course_is_not_subscribed(self):
         self.client.force_authenticate(user=self.user)
 
-        response = self.client.get(
-            f"/api/courses/{self.course.id}/"
-        )
+        response = self.client.get(f"/api/courses/{self.course.id}/")
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data["is_subscribed"])
