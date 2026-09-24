@@ -1,18 +1,24 @@
-from rest_framework import viewsets
+
+from lms.permissions import IsModerator, IsOwner
+from lms.paginators import LMSPagination
+
+from lms.models import Course, Lesson, Subscription
+from lms.serializers import CourseSerializer, LessonSerializer
+
+from django.shortcuts import get_object_or_404
+from rest_framework import status, viewsets
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
-from lms.permissions import IsModerator, IsOwner
-
-from lms.models import Course, Lesson
-from lms.serializers import CourseSerializer, LessonSerializer
-
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 class CourseViewSet(viewsets.ModelViewSet):
     """CRUD для курса через ViewSet."""
 
+    pagination_class = LMSPagination
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
@@ -41,7 +47,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonListCreateView(ListCreateAPIView):
     """Список уроков + создание."""
-
+    pagination_class = LMSPagination
     serializer_class = LessonSerializer
 
     def get_queryset(self):
@@ -96,3 +102,48 @@ class LessonRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
         return [permission() for permission in permission_classes]
 
+
+class CourseSubscriptionView(APIView):
+    """
+    Подписка и отписка текущего пользователя от курса.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        course = get_object_or_404(Course, pk=pk)
+
+        subscription, created = Subscription.objects.get_or_create(
+            user=request.user,
+            course=course,
+        )
+
+        if created:
+            return Response(
+                {"message": "Вы успешно подписались на курс."},
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(
+            {"message": "Вы уже подписаны на этот курс."},
+            status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request, pk):
+        course = get_object_or_404(Course, pk=pk)
+
+        deleted, _ = Subscription.objects.filter(
+            user=request.user,
+            course=course,
+        ).delete()
+
+        if deleted:
+            return Response(
+                {"message": "Вы успешно отписались от курса."},
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {"message": "Вы не подписаны на этот курс."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
