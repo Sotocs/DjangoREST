@@ -25,6 +25,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     """Кастомная модель пользователя с авторизацией по email."""
+
     username = models.CharField(max_length=150, null=True, blank=True, unique=False)
 
     email = models.EmailField(unique=True, verbose_name="Email адрес")
@@ -32,9 +33,7 @@ class User(AbstractUser):
     phone_number = models.CharField(
         max_length=20, null=True, blank=True, verbose_name="Номер телефона"
     )
-    city = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name="Город"
-    )
+    city = models.CharField(max_length=100, null=True, blank=True, verbose_name="Город")
     avatar = models.ImageField(
         upload_to="avatars/", null=True, blank=True, verbose_name="Аватар"
     )
@@ -83,7 +82,9 @@ class Payment(models.Model):
         related_name="payments",
         verbose_name="Оплаченный урок",
     )
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сумма оплаты")
+    amount = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="Сумма оплаты"
+    )
     payment_method = models.CharField(
         max_length=10,
         choices=PAYMENT_METHOD_CHOICES,
@@ -97,4 +98,6 @@ class Payment(models.Model):
         ordering = ["-payment_date"]
 
     def __str__(self):
-        return f"{self.user.email} — {self.amount} ₽ ({self.get_payment_method_display()})"
+        return (
+            f"{self.user.email} — {self.amount} ₽ ({self.get_payment_method_display()})"
+        )

@@ -5,6 +5,7 @@ from lms.views import (
     CourseViewSet,
     LessonListCreateView,
     LessonRetrieveUpdateDestroyView,
+    CourseSubscriptionView,
 )
 
 router = DefaultRouter()
@@ -17,5 +18,10 @@ urlpatterns = [
         "lessons/<int:pk>/",
         LessonRetrieveUpdateDestroyView.as_view(),
         name="lesson-detail",
+    ),
+    path(
+        "courses/<int:pk>/subscribe/",
+        CourseSubscriptionView.as_view(),
+        name="course-subscribe",
     ),
 ]
