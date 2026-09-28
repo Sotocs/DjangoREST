@@ -13,15 +13,18 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -43,6 +46,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "users",
     "lms",
+    "drf_yasg",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -53,7 +58,18 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://read-and-write.example.com",  #  Замените на адрес вашего фронтенд-сервера
+    # и добавьте адрес бэкенд-сервера
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
 
 ROOT_URLCONF = "config.urls"
 
@@ -145,3 +161,5 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
