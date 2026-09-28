@@ -25,6 +25,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     """Кастомная модель пользователя с авторизацией по email."""
+
     username = models.CharField(max_length=150, null=True, blank=True, unique=False)
 
     email = models.EmailField(unique=True, verbose_name="Email адрес")
@@ -32,9 +33,7 @@ class User(AbstractUser):
     phone_number = models.CharField(
         max_length=20, null=True, blank=True, verbose_name="Номер телефона"
     )
-    city = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name="Город"
-    )
+    city = models.CharField(max_length=100, null=True, blank=True, verbose_name="Город")
     avatar = models.ImageField(
         upload_to="avatars/", null=True, blank=True, verbose_name="Аватар"
     )
@@ -58,6 +57,7 @@ class Payment(models.Model):
     PAYMENT_METHOD_CHOICES = [
         ("cash", "Наличные"),
         ("transfer", "Перевод на счёт"),
+        ("stripe", "Stripe"),
     ]
 
     user = models.ForeignKey(
@@ -66,7 +66,10 @@ class Payment(models.Model):
         related_name="payments",
         verbose_name="Пользователь",
     )
-    payment_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата оплаты")
+    payment_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата оплаты",
+    )
     paid_course = models.ForeignKey(
         "lms.Course",
         on_delete=models.CASCADE,
@@ -83,18 +86,26 @@ class Payment(models.Model):
         related_name="payments",
         verbose_name="Оплаченный урок",
     )
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сумма оплаты")
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Сумма оплаты",
+    )
     payment_method = models.CharField(
         max_length=10,
         choices=PAYMENT_METHOD_CHOICES,
         default="transfer",
         verbose_name="Способ оплаты",
     )
-
-    class Meta:
-        verbose_name = "Платёж"
-        verbose_name_plural = "Платежи"
-        ordering = ["-payment_date"]
-
-    def __str__(self):
-        return f"{self.user.email} — {self.amount} ₽ ({self.get_payment_method_display()})"
+    payment_url = models.URLField(
+        max_length=500,
+        null=True,
+        blank=True,
+        verbose_name="Ссылка на оплату",
+    )
+    stripe_session_id = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name="ID сессии Stripe",
+    )
