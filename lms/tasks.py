@@ -10,8 +10,7 @@ def send_course_update_email(course_id):
     course = Course.objects.get(pk=course_id)
 
     emails = list(
-        Subscription.objects.filter(course=course)
-        .values_list("user__email", flat=True)
+        Subscription.objects.filter(course=course).values_list("user__email", flat=True)
     )
 
     if not emails:
