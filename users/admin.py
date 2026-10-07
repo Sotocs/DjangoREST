@@ -13,6 +13,13 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ("user", "payment_date", "paid_course", "paid_lesson", "amount", "payment_method")
+    list_display = (
+        "user",
+        "payment_date",
+        "paid_course",
+        "paid_lesson",
+        "amount",
+        "payment_method",
+    )
     list_filter = ("payment_method", "paid_course", "paid_lesson")
     search_fields = ("user__email",)
