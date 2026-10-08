@@ -13,7 +13,7 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from lms.tasks import send_course_update_email
 from drf_yasg.utils import swagger_auto_schema
 
 
@@ -46,6 +46,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        send_course_update_email.delay(course.id)
 
 
 class LessonListCreateView(ListCreateAPIView):
