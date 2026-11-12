@@ -13,6 +13,10 @@ class Course(models.Model):
         upload_to="previews/", null=True, blank=True, verbose_name="Превью"
     )
     description = models.TextField()
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Дата обновления",
+    )
 
     def __str__(self):
         return self.title
