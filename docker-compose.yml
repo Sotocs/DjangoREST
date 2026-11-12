@@ -1,6 +1,4 @@
-
 services:
-
   # PostgreSQL
   db:
     image: postgres:17-alpine
@@ -39,12 +37,16 @@ services:
   # Django REST API
   web:
     build: .
+    image: djangorest:latest
     restart: unless-stopped
     env_file:
       - .env
     command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+      gunicorn config.wsgi:application
+      --bind 0.0.0.0:8000
+      --workers 1
+      --threads 2
+      --timeout 60
     ports:
       - "8000:8000"
     depends_on:
@@ -55,11 +57,24 @@ services:
 
   # Celery Worker
   celery:
-    build: .
+    image: djangorest:latest
     restart: unless-stopped
     env_file:
       - .env
-    command: celery -A config worker --loglevel=info
+    command: celery -A config worker --loglevel=info --concurrency=1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Celery Beat
+  celery-beat:
+    image: djangorest:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: celery -A config beat --loglevel=info
     depends_on:
       db:
         condition: service_healthy

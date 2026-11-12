@@ -754,6 +754,25 @@ files = [
 tests = ["asttokens (>=2.1.0)", "coverage", "coverage-enable-subprocess", "ipython", "littleutils", "pytest", "rich"]
 
 [[package]]
+name = "gunicorn"
+version = "27.0.0"
+description = "WSGI HTTP Server for UNIX"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "gunicorn-27.0.0-py3-none-any.whl", hash = "sha256:1380f2f520abc3beb9e72cd2e728bd2d08a19b3ff6ac03ebd8da71d1798a4008"},
+    {file = "gunicorn-27.0.0.tar.gz", hash = "sha256:88d52e7c60b3af07bc8db431fbb450a94780f2cbe7c420c7cf1891392661c591"},
+]
+
+[package.extras]
+fast = ["gunicorn_h1c (>=0.6.14)"]
+gevent = ["gevent (>=24.10.1)", "packaging"]
+http2 = ["h2 (>=4.4.1)"]
+setproctitle = ["setproctitle"]
+testing = ["coverage", "gevent (>=24.10.1)", "h2 (>=4.4.1)", "httpx[http2] (>=0.23.0)", "inotify (>=0.2.10)", "packaging", "pytest (>=9.0.3)", "pytest-asyncio", "pytest-cov", "uvloop (>=0.19.0)"]
+tornado = ["tornado (>=6.5.7)"]
+
+[[package]]
 name = "idna"
 version = "3.20"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -1876,4 +1895,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.14"
-content-hash = "84457ce349dc96fa2917582c11d1e3b036430211a608d5df9c4d363a725ea7ce"
+content-hash = "7edcbc0ddd75e3ce518528da13d74dbd0e23cb20dc730c45a107a9d5f14f702a"
