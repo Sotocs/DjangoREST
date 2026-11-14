@@ -1,20 +1,17 @@
-from lms.permissions import IsModerator, IsOwner
-from lms.paginators import LMSPagination
-
-from lms.models import Course, Lesson, Subscription
-from lms.serializers import CourseSerializer, LessonSerializer
-
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
-from rest_framework.generics import (
-    ListCreateAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
+from rest_framework.generics import (ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from lms.models import Course, Lesson, Subscription
+from lms.paginators import LMSPagination
+from lms.permissions import IsModerator, IsOwner
+from lms.serializers import CourseSerializer, LessonSerializer
 from lms.tasks import send_course_update_email
-from drf_yasg.utils import swagger_auto_schema
 
 
 class CourseViewSet(viewsets.ModelViewSet):

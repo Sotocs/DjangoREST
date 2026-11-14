@@ -77,6 +77,12 @@ jobs:
       - name: Install dependencies
         run: poetry install --with dev --no-root --no-interaction --no-ansi
 
+      - name: Check code formatting with Black
+        run: poetry run black --check .
+
+      - name: Check import sorting with isort
+        run: poetry run isort --check-only --profile black .
+
       - name: Django system check
         run: poetry run python manage.py check
 
