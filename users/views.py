@@ -4,9 +4,11 @@ from rest_framework.response import Response
 
 from users.models import Payment, User
 from users.serializers import PaymentSerializer, UserSerializer
-from users.services.stripe_services import (create_checkout_session,
-                                            create_stripe_price,
-                                            create_stripe_product)
+from users.services.stripe_services import (
+    create_checkout_session,
+    create_stripe_price,
+    create_stripe_product,
+)
 
 
 class PaymentViewSet(viewsets.ModelViewSet):
