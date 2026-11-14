@@ -5,18 +5,22 @@ on:
   push:
     branches:
       - main
+      - develop
+  pull_request:
+    branches:
+      - develop
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: production-deploy
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   tests:
-    name: Run tests
+    name: Run tests and build
     runs-on: ubuntu-latest
 
     services:
@@ -72,7 +76,22 @@ jobs:
         run: pip install poetry
 
       - name: Install dependencies
-        run: poetry install --with dev --no-interaction --no-ansi
+        run: poetry install --with dev --no-root --no-interaction --no-ansi
+
+      - name: Check import sorting with isort
+        run: poetry run isort --check-only --profile black .
+
+      - name: Check formatting with Black
+        run: poetry run black --check .
+
+      - name: Prepare environment for Docker build
+        run: cp .env.example .env
+
+      - name: Validate Docker Compose configuration
+        run: docker compose config --quiet
+
+      - name: Build Docker image
+        run: docker compose build
 
       - name: Django system check
         run: poetry run python manage.py check
@@ -87,10 +106,11 @@ jobs:
     name: Deploy to VPS
     runs-on: ubuntu-latest
     needs: tests
+
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Deploy over SSH
+      - name: Validate deployment secrets
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
@@ -98,6 +118,26 @@ jobs:
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
           VPS_APP_PATH: ${{ secrets.VPS_APP_PATH }}
         run: |
+          set -euo pipefail
+
+          for name in VPS_HOST VPS_USER VPS_SSH_KEY VPS_KNOWN_HOSTS VPS_APP_PATH; do
+            if [ -z "${!name}" ]; then
+              echo "Missing GitHub Actions secret: $name"
+              exit 1
+            fi
+          done
+
+      - name: Deploy over SSH
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_APP_PATH: ${{ secrets.VPS_APP_PATH }}
+
+        run: |
+          set -euo pipefail
+
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
@@ -109,11 +149,14 @@ jobs:
 
           ssh -i ~/.ssh/deploy_key \
             -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
             "$VPS_USER@$VPS_HOST" \
-            "cd '$VPS_APP_PATH' &&
-             git pull --ff-only origin main &&
-             docker compose build &&
-             docker compose up -d db redis &&
-             docker compose run --rm web python manage.py migrate &&
-             docker compose up -d --force-recreate web celery celery-beat &&
+            "set -e
+             cd '$VPS_APP_PATH'
+             git pull --ff-only origin main
+             docker compose config --quiet
+             docker compose build
+             docker compose up -d db redis
+             docker compose run --rm --no-deps --entrypoint python web manage.py migrate
+             docker compose up -d --force-recreate web celery celery-beat nginx
              docker compose ps"

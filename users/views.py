@@ -1,17 +1,13 @@
-from users.models import User
-from users.serializers import UserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
-
-from users.models import Payment
-from users.serializers import PaymentSerializer
+from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
-from rest_framework import status
 
+from users.models import Payment, User
+from users.serializers import PaymentSerializer, UserSerializer
 from users.services.stripe_services import (
-    create_stripe_product,
-    create_stripe_price,
     create_checkout_session,
+    create_stripe_price,
+    create_stripe_product,
 )
 
 
