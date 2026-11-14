@@ -17,6 +17,10 @@ COPY . .
 RUN useradd --create-home appuser \
     && chown -R appuser:appuser /app
 
+RUN chmod +x /app/docker/entrypoint.sh
+
 USER appuser
 
 EXPOSE 8000
+
+ENTRYPOINT ["/app/docker/entrypoint.sh"]

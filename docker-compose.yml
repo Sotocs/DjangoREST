@@ -14,7 +14,7 @@ services:
     expose:
       - "5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -29,10 +29,11 @@ services:
     expose:
       - "6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
+
 
   # Django REST API
   web:
@@ -47,18 +48,20 @@ services:
       --workers 1
       --threads 2
       --timeout 60
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
 
+
   # Celery Worker
   celery:
     image: djangorest:latest
     restart: unless-stopped
+    entrypoint: []
     env_file:
       - .env
     command: celery -A config worker --loglevel=info --concurrency=1
@@ -72,6 +75,7 @@ services:
   celery-beat:
     image: djangorest:latest
     restart: unless-stopped
+    entrypoint: []
     env_file:
       - .env
     command: celery -A config beat --loglevel=info
@@ -80,6 +84,17 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
 
 volumes:
   postgres_data:

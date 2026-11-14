@@ -16,3 +16,4 @@ htmlcov
 .vscode
 .env*
 !.env.example
+staticfiles
